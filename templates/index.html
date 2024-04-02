@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Schedule</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>星期一</th>
+                <th>星期二</th>
+                <th>星期三</th>
+                <th>星期四</th>
+                <th>星期五</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for time_id in range(1, 15) %}
+            <tr>
+                <td>{{ time_id }}</td>
+                {% for day in range(1, 6) %}
+                <td>
+                    {% for row in schedule %}
+                        {% if row[0] == (day-1)*14 + time_id %}
+                            {% if row[1] %}
+                                {{ row[1] }}
+                            {% else %}
+                                <!-- Display space if course_id is None -->
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
