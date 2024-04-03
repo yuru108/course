@@ -15,8 +15,12 @@ def judge(SID, CID):
     student = student_data(SID)
     course = course_data(CID)
 
+    if check_schedule(SID, course.start, course.end) == False:
+        print('所選時段已有課程')
+        return False
+
     #判斷是否達到最大人數
-    if course.max_member == course.current_member:
+    elif course.max_member == course.current_member:
         print('人數已滿')
         return False
 
@@ -30,11 +34,18 @@ def judge(SID, CID):
         print('學分已達上限')
         return False
 
-    #判斷是否選擇同名課程
+    #判斷是否選擇同名課程(待補)
     
     return True
 
-SID = 'D1150459'
-CID = 2
+def add_course(SID, CID):
+    if judge(SID, CID):
+        add_schedule(SID, CID)
+        print('加選成功')
+    else:
+        print('加選失敗')
 
-print(judge(SID, CID))
+SID = 'D1150459'
+CID = 1
+
+add_course(SID, CID)

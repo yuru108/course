@@ -53,9 +53,12 @@ def init_course(SID):
     connection.commit()
     cursor.close()
 
-def add_schedule(SID, CID, start, end):
+def add_schedule(SID, CID):
     cursor = connection.cursor()
     schedule_name = 'schedule_'+SID
+
+    cursor.execute(f'SELECT `start`,`end` FROM `course` WHERE `ID`={CID};')
+    start, end = (cursor.fetchall())[0]
 
     cursor.execute(f'UPDATE `{schedule_name}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
 
