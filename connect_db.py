@@ -42,22 +42,22 @@ def select_table(table):
 
 def init_course(SID):
     cursor = connection.cursor()
-    schedule = 'schedule_'+SID
+    schedule_name = 'schedule_'+SID
 
     # clear table
-    cursor.execute(f'TRUNCATE TABLE {schedule}')
+    cursor.execute(f'TRUNCATE TABLE {schedule_name}')
     
     for i in range(1, 71):
-        cursor.execute(f'INSERT INTO `{schedule}` (`time_id`) VALUES (%s)', (i,))
+        cursor.execute(f'INSERT INTO `{schedule_name}` (`time_id`) VALUES (%s)', (i,))
 
     connection.commit()
     cursor.close()
 
 def add_schedule(SID, CID, start, end):
     cursor = connection.cursor()
-    schedule = 'schedule_'+SID
+    schedule_name = 'schedule_'+SID
 
-    cursor.execute(f'UPDATE `{schedule}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
+    cursor.execute(f'UPDATE `{schedule_name}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
 
     connection.commit()
     cursor.close()
