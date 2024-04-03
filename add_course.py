@@ -12,6 +12,8 @@ def check_schedule(SID, start, end):
     return True                     # 無衝堂
 
 
+# test
+
 SID = 'D1150459'
 
 student = student_data(SID)
