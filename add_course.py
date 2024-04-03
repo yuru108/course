@@ -12,8 +12,6 @@ def check_schedule(SID, start, end):
     return True                     # 無衝堂
 
 
-# test
-
 SID = 'D1150459'
 
 student = student_data(SID)
@@ -31,7 +29,26 @@ print(course.major)
 
 print(check_schedule(SID, course.start, course.end))
 
-# flag = 1
-# CID = '0002'
-# if student_data.major != course_data.major and course_data.major != none
-#     flag = 0
+#判斷是否為本系
+if student.major != course.major and course.major != None:
+    print('ERROR!')
+
+#判斷是否達到最大人數
+elif course.max_member == course.current_member:
+    print('FULL')
+
+#判斷是否選擇同名課程
+else:
+    for i in range(1, 70):
+        if Schedule[i][1].course_id == course.course_id:
+            print('ERROR')
+
+#不可超過30學分
+    credit = 0
+    for i in range(1,70):
+        course = Schedule[i][1].course_id
+        credit += course.course_id
+    if  course.credit + course.course_id >= 30:
+            print('ERROR')
+
+
