@@ -53,11 +53,20 @@ def init_course(SID):
     connection.commit()
     cursor.close()
 
-def update_course(SID, CID, start, end):
+def add_schedule(SID, CID, start, end):
     cursor = connection.cursor()
     schedule = 'schedule_'+SID
 
     cursor.execute(f'UPDATE `{schedule}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
+
+    connection.commit()
+    cursor.close()
+
+def remove_schedule(SID, CID):
+    cursor = connection.cursor()
+    schedule = 'schedule_'+SID
+
+    cursor.execute(f'UPDATE `{schedule}` SET `course_id`=NULL WHERE `course_id`={CID};')
 
     connection.commit()
     cursor.close()

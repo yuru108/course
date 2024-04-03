@@ -1,5 +1,5 @@
 from init import Student, Course
-from connect_db import student_data, course_data, update_course
+from connect_db import student_data, course_data, add_schedule
 
 SID = 'D1150459'
 
