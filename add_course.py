@@ -1,5 +1,5 @@
-from connect_db import student_data,select_table,init_course
-from init import Student
+from init import Student, Course
+from connect_db import student_data, course_data, select_table, init_course
 
 SID = 'D1150459'
 
@@ -9,8 +9,14 @@ print(student.SID)
 print(student.name)
 print(student.major)
 
+CID = 1
+
+course = course_data(CID)
+
+print(course.cname)
+print(course.major)
+
 # flag = 1
 # CID = '0002'
 # if student_data.major != course_data.major and course_data.major != none
 #     flag = 0
-    

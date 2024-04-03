@@ -1,5 +1,5 @@
 import mysql.connector
-from init import Student
+from init import Student, Time, Course, Professor, Schedule
 
 connection = mysql.connector.connect(
     host='127.0.0.1',
@@ -24,11 +24,13 @@ def student_data(SID):
 
 def course_data(CID):
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM `course` WHERE `SID`=%s;', (CID,))
+    cursor.execute(f'SELECT * FROM `course` WHERE `ID`={CID};')
     result = cursor.fetchall()
 
+    course = Course(ID=result[0][0], course_id=result[0][1], cname=result[0][2], professor=result[0][3], type=result[0][4], major=result[0][5], credit=result[0][6], max_member=result[0][7], current_member=result[0][8], start=result[0][9], end=result[0][10])
+
     cursor.close()
-    return result
+    return course
 
 def select_table(table):
     cursor = connection.cursor()
