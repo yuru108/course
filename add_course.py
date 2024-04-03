@@ -1,5 +1,5 @@
 from init import Student, Course
-from connect_db import student_data, course_data, select_table, add_schedule
+from connect_db import init_course, student_data, course_data, select_table, add_schedule
 
 # 判斷是否有衝堂
 def check_schedule(SID, start, end):
@@ -45,7 +45,11 @@ def add_course(SID, CID):
     else:
         print('加選失敗')
 
+# ========= test ===========
+
 SID = 'D1150459'
 CID = 1
 
 add_course(SID, CID)
+
+# ==========================

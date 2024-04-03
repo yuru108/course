@@ -61,8 +61,13 @@ def add_schedule(SID, CID):
     start, end = (cursor.fetchall())[0]
 
     cursor.execute(f'UPDATE `{schedule_name}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
-
     connection.commit()
+
+    cursor.execute(f'SELECT `current_member` FROM `course` WHERE `ID`={CID};')
+    current_member = (cursor.fetchall())[0][0]
+    cursor.execute(f'UPDATE `course` SET `current_member`={current_member+1} WHERE `ID`={CID};')
+    connection.commit()
+
     cursor.close()
 
 def remove_schedule(SID, CID):
