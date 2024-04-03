@@ -11,44 +11,30 @@ def check_schedule(SID, start, end):
             return False            # 有衝堂
     return True                     # 無衝堂
 
+def judge(SID, CID):
+    student = student_data(SID)
+    course = course_data(CID)
+
+    #判斷是否達到最大人數
+    if course.max_member == course.current_member:
+        print('人數已滿')
+        return False
+
+    #判斷是否為本系
+    elif student.major != course.major and course.major != None:
+        print('不可選修他系課程')
+        return False
+
+    #不可超過30學分
+    elif student.total_credit + course.credit >= 30:
+        print('學分已達上限')
+        return False
+
+    #判斷是否選擇同名課程
+    
+    return True
 
 SID = 'D1150459'
+CID = 2
 
-student = student_data(SID)
-
-print(student.SID)
-print(student.name)
-print(student.major)
-
-CID = 1
-
-course = course_data(CID)
-
-print(course.cname)
-print(course.major)
-
-print(check_schedule(SID, course.start, course.end))
-
-#判斷是否為本系
-if student.major != course.major and course.major != None:
-    print('ERROR!')
-
-#判斷是否達到最大人數
-elif course.max_member == course.current_member:
-    print('FULL')
-
-#判斷是否選擇同名課程
-else:
-    for i in range(1, 70):
-        if Schedule[i][1].course_id == course.course_id:
-            print('ERROR')
-
-#不可超過30學分
-    credit = 0
-    for i in range(1,70):
-        course = Schedule[i][1].course_id
-        credit += course.course_id
-    if  course.credit + course.course_id >= 30:
-            print('ERROR')
-
-
+print(judge(SID, CID))

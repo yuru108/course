@@ -17,7 +17,7 @@ def student_data(SID):
     cursor.execute('SELECT * FROM `student` WHERE `SID`=%s;', (SID,))
     result = cursor.fetchall()
 
-    student = Student(SID=result[0][0], name=result[0][1], major=result[0][2])
+    student = Student(SID=result[0][0], name=result[0][1], major=result[0][2], total_credit=result[0][3])
 
     cursor.close()
     return student
