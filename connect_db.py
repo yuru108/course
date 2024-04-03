@@ -9,15 +9,12 @@ connection = mysql.connector.connect(
     database='course'
 )
 
-def close_connect():
-    connection.close()
-
 def student_data(SID):
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM `student` WHERE `SID`=%s;', (SID,))
-    result = cursor.fetchall()
+    result = cursor.fetchone()
 
-    student = Student(SID=result[0][0], name=result[0][1], major=result[0][2], total_credit=result[0][3])
+    student = Student(SID=result[0], name=result[1], major=result[2], total_credit=result[3])
 
     cursor.close()
     return student
@@ -25,9 +22,9 @@ def student_data(SID):
 def course_data(CID):
     cursor = connection.cursor()
     cursor.execute(f'SELECT * FROM `course` WHERE `ID`={CID};')
-    result = cursor.fetchall()
+    result = cursor.fetchone()
 
-    course = Course(ID=result[0][0], course_id=result[0][1], cname=result[0][2], professor=result[0][3], type=result[0][4], major=result[0][5], credit=result[0][6], max_member=result[0][7], current_member=result[0][8], start=result[0][9], end=result[0][10])
+    course = Course(ID=result[0], course_id=result[1], cname=result[2], professor=result[3], type=result[4], major=result[5], credit=result[6], max_member=result[7], current_member=result[8], start=result[9], end=result[10])
 
     cursor.close()
     return course
