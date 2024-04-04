@@ -37,7 +37,18 @@ def select_table(table):
     cursor.close()
     return result
 
-def init_course(SID):
+def create_schedule(SID):
+    cursor = connection.cursor()
+    schedule_name = 'schedule_'+SID
+
+    cursor.execute(f'CREATE TABLE `{schedule_name}`(`time_id` int, `course_id` int, foreign key (`time_id`) references `time`(ID) on delete set null, foreign key (`course_id`) references course(ID) on delete set null);')
+    
+    connection.commit()
+    cursor.close()
+
+    init_schedule(SID)
+
+def init_schedule(SID):
     cursor = connection.cursor()
     schedule_name = 'schedule_'+SID
 

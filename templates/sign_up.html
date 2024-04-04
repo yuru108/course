@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sign_up</title>
     <style>
         h1 {
             padding: 10px;
@@ -17,7 +17,7 @@
     </style>
 </head>
 <body>
-    <h1>Login</h1>
+    <h1>Sign up</h1>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -39,7 +39,7 @@
         </div>
         <div class="form">
             {{ form.submit }}
-            <a href="{{ url_for('sign_up_page') }}" class="link">Sign Up</a>
+            <a href="{{ url_for('login_page') }}" class="link">Login</a>
         </div>
     </form>
 </body>
