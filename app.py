@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from connect_db import load_config, student_data, select_table
+from connect_db import load_config, student_data, course_data, select_table
 from account import search_account, login, sign_up
 
 app = Flask(__name__)
@@ -62,12 +62,12 @@ def root():
 def index():
     global student_info
     if login_flag == False:
-        return redirect(url_for('login_page'))   
+        return redirect(url_for('login_page'))
 
     schedule_name = 'schedule_'+student_info.SID
     schedule_data = select_table(schedule_name)
 
-    return render_template('index.html', schedule=schedule_data, student_info=student_info)
+    return render_template('index.html', schedule=schedule_data, student_info=student_info, course_data=course_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

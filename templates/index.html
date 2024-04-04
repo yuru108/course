@@ -12,6 +12,9 @@
             border: 1px solid black;
             padding: 5px;
             text-align: center;
+            width: 70px;
+            height: 25px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -44,7 +47,8 @@
                     {% for row in schedule %}
                         {% if row[0] == (day-1)*14 + time_id %}
                             {% if row[1] %}
-                                {{ row[1] }}
+                                {% set course = course_data(row[1]) %}
+                                {{ course.cname }}
                             {% else %}
                                 <!-- Display space if course_id is None -->
                             {% endif %}
