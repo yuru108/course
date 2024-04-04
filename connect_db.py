@@ -33,9 +33,22 @@ def select_table(table):
     cursor = connection.cursor()
     cursor.execute(f'SELECT * FROM `{table}`;')
     result = cursor.fetchall()
-
+    
     cursor.close()
     return result
+
+def update_credit(SID, CID):
+    cursor = connection.cursor()
+    cursor.execute('SELECT `total_credit` FROM `student` WHERE `SID`=%s;', (SID, ))
+    current_credit = cursor.fetchone()[0]
+
+    cursor.execute(f'SELECT `credit` FROM `course` WHERE `ID`={CID};')
+    course_credit = cursor.fetchone()[0]
+
+    cursor.execute(f'UPDATE `student` SET `total_credit`={current_credit+course_credit} where `SID`=%s;', (SID, ))
+
+    connection.commit()
+    cursor.close()
 
 def create_schedule(SID):
     cursor = connection.cursor()
