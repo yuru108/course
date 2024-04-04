@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule</title>
     <style>
         table {
@@ -8,13 +10,20 @@
         }
         th, td {
             border: 1px solid black;
-            padding: 8px;
+            padding: 5px;
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Schedule</h1>
+    <div>
+        <h2>Student Information</h2>
+        <p>SID: {{ student_info.SID }}</p>
+        <p>Name: {{ student_info.name }}</p>
+        <p>Credit: {{ student_info.total_credit }}</p>
+        <!-- Add more fields as needed -->
+    </div>
+    <h2>Schedule</h2>
     <table>
         <thead>
             <tr>
