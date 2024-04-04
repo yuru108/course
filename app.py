@@ -3,15 +3,10 @@ from flask import Flask, render_template, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
-from connect_db import student_data, select_table
+from connect_db import load_config, student_data, select_table
 from account import search_account, login, sign_up
 
 app = Flask(__name__)
-
-def load_config(filename="config.yml"):
-    with open(filename, "r", encoding="utf-8") as config_file:
-        return yaml.load(config_file, Loader=yaml.Loader)
-
 app.secret_key = load_config().get('app', {}).get('secret_key', 'default_secret_key')
 
 login_flag = False

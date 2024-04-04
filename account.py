@@ -1,13 +1,9 @@
 import yaml
 import bcrypt
 import mysql.connector
-from connect_db import create_schedule
+from connect_db import load_config, create_schedule
 from flask import flash
 
-
-def load_config(filename="config.yml"):
-    with open(filename, "r", encoding="utf-8") as config_file:
-        return yaml.load(config_file, Loader=yaml.Loader)
 
 config_data = load_config()
 

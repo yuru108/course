@@ -1,12 +1,19 @@
+import yaml
 import mysql.connector
 from init import Student, Time, Course, Professor, Schedule
 
+def load_config(filename="config.yml"):
+    with open(filename, "r", encoding="utf-8") as config_file:
+        return yaml.load(config_file, Loader=yaml.Loader)
+
+config_data = load_config()
+
 connection = mysql.connector.connect(
-    host='127.0.0.1',
-    port='3306',
-    user='root',
-    password='Yuru_102640',
-    database='course'
+    host=config_data.get('database', {}).get('host', ''),
+    port=config_data.get('database', {}).get('port', ''),
+    user=config_data.get('database', {}).get('user', ''),
+    password=config_data.get('database', {}).get('password', ''),
+    database=config_data.get('database', {}).get('database', '')
 )
 
 def student_data(SID):
