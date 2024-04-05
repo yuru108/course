@@ -1,8 +1,10 @@
 class Student:
-    def __init__(self, SID, name, major):
+    def __init__(self, SID, name, major, grade, total_credit):
         self.SID = SID                  # 學號
         self.name = name
-        self.major = major
+        self.major = major              # 系別
+        self.grade = grade              # 年級 (ex: 二乙)
+        self.total_credit = total_credit
 
 class Time:
     def __init__(self, ID, start_time, end_time):

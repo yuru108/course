@@ -1,20 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule</title>
     <style>
+        h2 {
+            font-size: 18px;
+        }
+        p {
+            font-size: 12px;
+        }
         table {
             border-collapse: collapse;
         }
         th, td {
             border: 1px solid black;
-            padding: 8px;
+            padding: 5px;
             text-align: center;
+            width: 50px;
+            height: 20px;
+            font-size: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Schedule</h1>
+    <div>
+        <h2>Student Info</h2>
+        <p>SID: {{ student_info.SID }}</p>
+        <p>最高學分： 30</p>
+        <p>最低學分： 12</p>
+        <p>目前學分: {{ student_info.total_credit }}</p>
+        <!-- Add more fields as needed -->
+    </div>
+    <h2>Schedule</h2>
     <table>
         <thead>
             <tr>
@@ -35,7 +54,8 @@
                     {% for row in schedule %}
                         {% if row[0] == (day-1)*14 + time_id %}
                             {% if row[1] %}
-                                {{ row[1] }}
+                                {% set course = course_data(row[1]) %}
+                                {{ course.cname }}
                             {% else %}
                                 <!-- Display space if course_id is None -->
                             {% endif %}
