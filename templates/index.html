@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule</title>
     <style>
+        h2 {
+            font-size: 18px;
+        }
+        p {
+            font-size: 12px;
+        }
         table {
             border-collapse: collapse;
         }
@@ -12,18 +18,19 @@
             border: 1px solid black;
             padding: 5px;
             text-align: center;
-            width: 70px;
-            height: 25px;
-            font-size: 12px;
+            width: 50px;
+            height: 20px;
+            font-size: 10px;
         }
     </style>
 </head>
 <body>
     <div>
-        <h2>Student Information</h2>
+        <h2>Student Info</h2>
         <p>SID: {{ student_info.SID }}</p>
-        <p>Name: {{ student_info.name }}</p>
-        <p>Credit: {{ student_info.total_credit }}</p>
+        <p>最高學分： 30</p>
+        <p>最低學分： 12</p>
+        <p>目前學分: {{ student_info.total_credit }}</p>
         <!-- Add more fields as needed -->
     </div>
     <h2>Schedule</h2>

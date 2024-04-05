@@ -1,6 +1,6 @@
 import yaml
 import mysql.connector
-from init import Student, Time, Course, Professor, Schedule
+from init import Student, Course
 
 def load_config(filename="config.yml"):
     with open(filename, "r", encoding="utf-8") as config_file:
@@ -21,7 +21,7 @@ def student_data(SID):
     cursor.execute('SELECT * FROM `student` WHERE `SID`=%s;', (SID,))
     result = cursor.fetchone()
 
-    student = Student(SID=result[0], name=result[1], major=result[2], total_credit=result[3])
+    student = Student(SID=result[0], name=result[1], major=result[2], grade=result[3], total_credit=result[4])
 
     cursor.close()
     return student
@@ -72,11 +72,14 @@ def init_schedule(SID):
     cursor = connection.cursor()
     schedule_name = 'schedule_'+SID
 
+    # clear credit
+    cursor.execute('UPDATE `student` SET `total_credit`=0 WHERE `SID`=%s;', (SID, ))
+
     # clear table
-    cursor.execute(f'TRUNCATE TABLE {schedule_name}')
+    cursor.execute(f'TRUNCATE TABLE {schedule_name};')
     
     for i in range(1, 71):
-        cursor.execute(f'INSERT INTO `{schedule_name}` (`time_id`) VALUES (%s)', (i,))
+        cursor.execute(f'INSERT INTO `{schedule_name}` (`time_id`) VALUES (%s);', (i,))
 
     connection.commit()
     cursor.close()
@@ -96,6 +99,8 @@ def add_schedule(SID, CID):
     cursor.execute(f'UPDATE `course` SET `current_member`={current_member+1} WHERE `ID`={CID};')
     connection.commit()
 
+    update_credit(SID, CID)
+
     cursor.close()
 
 def remove_schedule(SID, CID):
@@ -106,3 +111,18 @@ def remove_schedule(SID, CID):
 
     connection.commit()
     cursor.close()
+
+
+def init_required_course(SID):
+    cursor = connection.cursor()
+    student = student_data(SID)
+
+    cursor.execute(f'SELECT `CID` FROM `required_course` WHERE `major`=%s AND `grade`=%s;', (student.major, student.grade))
+    required_course = cursor.fetchall()
+
+    for i in required_course:
+        add_schedule(SID, i[0])
+
+SID = 'D1150459'
+init_schedule(SID)
+init_required_course(SID)
