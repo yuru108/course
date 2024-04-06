@@ -19,10 +19,86 @@
             padding: 5px;
             text-align: center;
             width: 50px;
-            height: 20px;
-            font-size: 10px;
+            height: 22px;
+            font-size: 12px;
+        }
+        th {
+            background-color: rgb(236, 250, 255);
+        }
+        form {
+            position: fixed;
+            top: 6%;
+            left: 35%;
+        }
+        .th_title {
+            width: 20px;
+        }
+        .input_font {
+            margin: 10px;
+            width: 60px;
+        }
+        .search_title {
+            position: fixed;
+            top: 0%;
+            left: 35%;
+        }
+        .result_title {
+            position: fixed;
+            top: 24%;
+            left: 35%;
+        }
+        .result_table {
+            position: fixed;
+            top: 32%;
+            left: 35%;
         }
     </style>
+    <script>
+        function toggleInput(element) {
+            var input = element.parentNode.querySelector('input[type="text"]');
+            var daySelect = document.getElementById("day_input");
+            var periodSelect = document.getElementById("period_input");
+            
+            if (element.value !== "time"){
+                if (element.checked) {
+                    input.disabled = false;
+                    input.required = true;
+                }
+                else {
+                    input.disabled = true;
+                    input.required = false;
+                    input.value = '';
+                }
+            }
+            else if (element.value === "time") {
+                if (element.checked){
+                    daySelect.disabled = false;
+                    periodSelect.disabled = false;
+                    daySelect.required = true;
+                    periodSelect.required = true;
+                }
+                else{
+                    daySelect.disabled = true;
+                    periodSelect.disabled = true;
+                    daySelect.required = false;
+                    periodSelect.required = false;
+                    daySelect.selectedIndex = 0;
+                    periodSelect.selectedIndex = 0;
+                }
+            }
+        }
+        function updateSearchOptions() {
+            var searchOptions = {};
+            var checkboxes = document.querySelectorAll('input[type="checkbox"][name="search_option"]:checked');
+            var daySelect = document.getElementById("day_input");
+            var periodSelect = document.getElementById("period_input");
+            
+            checkboxes.forEach(function(checkbox) {
+                searchOptions[checkbox.value] = inputField.value;
+            });
+            document.getElementById("search_options").value = JSON.stringify(searchOptions);
+        }
+    </script>
 </head>
 <body>
     <div>
@@ -33,11 +109,10 @@
         <p>目前學分: {{ student_info.total_credit }}</p>
         <!-- Add more fields as needed -->
     </div>
-    <h2>Schedule</h2>
     <table>
         <thead>
             <tr>
-                <th>Time</th>
+                <th class="th_title">Time</th>
                 <th>星期一</th>
                 <th>星期二</th>
                 <th>星期三</th>
@@ -48,14 +123,14 @@
         <tbody>
             {% for time_id in range(1, 15) %}
             <tr>
-                <td>{{ time_id }}</td>
+                <th class="th_title">{{ time_id }}</th>
                 {% for day in range(1, 6) %}
                 <td>
                     {% for row in schedule %}
                         {% if row[0] == (day-1)*14 + time_id %}
                             {% if row[1] %}
                                 {% set course = course_data(row[1]) %}
-                                {{ course.cname }}
+                                <span title="{{ course.cname }} ({{ course.credit }})">{{ course.ID }}</span>
                             {% else %}
                                 <!-- Display space if course_id is None -->
                             {% endif %}
@@ -66,6 +141,80 @@
             </tr>
             {% endfor %}
         </tbody>
+    </table>
+    <h2 class="search_title">Search</h2>
+    <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateForm()">
+        <label>
+            <input type="checkbox" name="search_option" value="ID" onclick="toggleInput(this)"> ID: 
+            <input type="text" class="input_font" name="ID_input" disabled>
+        </label>
+        <label>
+            <input type="checkbox" name="search_option" value="cname" onclick="toggleInput(this)" onchange="updateSearchOptions(this)"> Course Name: 
+            <input type="text" class="input_font" name="cname_input" disabled>
+        </label>
+        <label>
+            <input type="checkbox" name="search_option" value="professor" onclick="toggleInput(this)" onchange="updateSearchOptions(this)"> Professor: 
+            <input type="text" class="input_font" name="professor_input" disabled>
+        </label><br>
+        <label>
+            <input type="checkbox" name="search_option" value="type" onclick="toggleInput(this)" onchange="updateSearchOptions(this)"> Type: 
+            <input type="text" class="input_font" name="type_input" disabled>
+        </label>
+        <label>
+            <input type="checkbox" name="search_option" value="major" onclick="toggleInput(this)" onchange="updateSearchOptions(this)"> Major: 
+            <input type="text" class="input_font" name="major_input" disabled>
+        </label>
+        <label>
+            <input type="checkbox" name="search_option" value="time" onclick="toggleInput(this)" onchange="updateSearchOptions(this)"> Time: 
+            <select class="input_font" name="day_input" id="day_input" disabled>
+                <option value="1">星期一</option>
+                <option value="2">星期二</option>
+                <option value="3">星期三</option>
+                <option value="4">星期四</option>
+                <option value="5">星期五</option>
+            </select>
+            <select class="input_font" name="period_input" id="period_input" disabled>
+                {% for period in range(1, 15) %}
+                    <option value="{{ period }}">{{ period }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2 class="result_title">Search Result</h2>
+    {% if search_result %}
+    <table class="result_table">
+        <thead>
+            <tr>
+                <th>選課代碼</th>
+                <th>課程代碼</th>
+                <th>課堂名稱</th>
+                <th>教授</th>
+                <th>類型</th>
+                <th>系別</th>
+                <th>學分</th>
+                <th>人數</th>
+                <th>時間</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in search_result %}
+            <tr>
+                <td>{{ course[0] }}</td>
+                <td>{{ course[1] }}</td>
+                <td>{{ course[2] }}</td>
+                <td>{{ course[3] }}</td>
+                <td>{{ course[4] }}</td>
+                <td>{{ course[5] }}</td>
+                <td>{{ course[6] }}</td>
+                <td>{{ course[8] }}/{{ course[7] }}</td>
+                <td>{{ course[9] }}~{{ course[10] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
     </table>
 </body>
 </html>
