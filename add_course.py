@@ -47,9 +47,9 @@ def add_course(SID, CID):
 
 # ========= test ===========
 
-SID = 'D1150459'
-CID = 1
+# SID = 'D1150459'
+# CID = 1
 
-add_course(SID, CID)
+# add_course(SID, CID)
 
 # ==========================

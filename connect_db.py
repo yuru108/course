@@ -88,15 +88,17 @@ def add_schedule(SID, CID):
     cursor = connection.cursor()
     schedule_name = 'schedule_'+SID
 
+    # get course's time
     cursor.execute(f'SELECT `start`,`end` FROM `course` WHERE `ID`={CID};')
     start, end = (cursor.fetchall())[0]
 
     cursor.execute(f'UPDATE `{schedule_name}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
     connection.commit()
 
+    # update member
     cursor.execute(f'SELECT `current_member` FROM `course` WHERE `ID`={CID};')
-    current_member = (cursor.fetchall())[0][0]
-    cursor.execute(f'UPDATE `course` SET `current_member`={current_member+1} WHERE `ID`={CID};')
+    new_member = int(cursor.fetchone()[0]) + 1
+    cursor.execute(f'UPDATE `course` SET `current_member`={new_member} WHERE `ID`={CID};')
     connection.commit()
 
     update_credit(SID, CID)
@@ -123,6 +125,10 @@ def init_required_course(SID):
     for i in required_course:
         add_schedule(SID, i[0])
 
-SID = 'D1150459'
-init_schedule(SID)
-init_required_course(SID)
+# ========= test ===========
+
+# SID = 'D1150459'
+# init_schedule(SID)
+# init_required_course(SID)
+
+# ==========================

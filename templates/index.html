@@ -192,12 +192,10 @@
                 <th>課堂名稱</th>
                 <th>教授</th>
                 <th>類型</th>
-                <th>專業</th>
+                <th>系別</th>
                 <th>學分</th>
-                <th>最大人數</th>
-                <th>目前人數</th>
-                <th>開始時間</th>
-                <th>結束時間</th>
+                <th>人數</th>
+                <th>時間</th>
             </tr>
         </thead>
         <tbody>
@@ -210,10 +208,8 @@
                 <td>{{ course[4] }}</td>
                 <td>{{ course[5] }}</td>
                 <td>{{ course[6] }}</td>
-                <td>{{ course[7] }}</td>
-                <td>{{ course[8] }}</td>
-                <td>{{ course[9] }}</td>
-                <td>{{ course[10] }}</td>
+                <td>{{ course[8] }}/{{ course[7] }}</td>
+                <td>{{ course[9] }}~{{ course[10] }}</td>
             </tr>
             {% endfor %}
         </tbody>
