@@ -1,10 +1,5 @@
-import yaml
 import mysql.connector
-from init import Student, Course
-
-def load_config(filename="config.yml"):
-    with open(filename, "r", encoding="utf-8") as config_file:
-        return yaml.load(config_file, Loader=yaml.Loader)
+from connect_db import load_config
 
 config_data = load_config()
 

@@ -1,4 +1,3 @@
-import yaml
 import bcrypt
 import mysql.connector
 from connect_db import load_config, create_schedule
@@ -51,5 +50,4 @@ def login(SID, password):
     if bcrypt.checkpw(password.encode(), stored_password.encode()):
         return True
     else:
-        flash('密碼輸入錯誤')
         return False
