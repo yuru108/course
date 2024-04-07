@@ -18,15 +18,6 @@
 </head>
 <body>
     <h1>Sign up</h1>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
     <form method="POST">
         {{ form.csrf_token }}
         <div class="form">
@@ -42,5 +33,14 @@
             <a href="{{ url_for('login_page') }}" class="link">Login</a>
         </div>
     </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

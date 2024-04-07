@@ -114,7 +114,6 @@ def remove_schedule(SID, CID):
     connection.commit()
     cursor.close()
 
-
 def init_required_course(SID):
     cursor = connection.cursor()
     student = student_data(SID)

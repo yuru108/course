@@ -1,4 +1,3 @@
-import yaml
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
@@ -48,10 +47,12 @@ def login_page():
             flash('此帳號不存在')
             return redirect(url_for('sign_up_page'))
         else:
-            login(SID, password)
-            login_flag = True
-            student_info = student_data(SID)
-            return redirect(url_for('index'))
+            if login(SID, password):
+                login_flag = True
+                student_info = student_data(SID)
+                return redirect(url_for('index'))
+            else:
+                flash('密碼輸入錯誤')
     return render_template('login.html', form=form)
 
 @app.route('/sign_up', methods=['GET', 'POST'])
