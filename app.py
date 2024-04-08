@@ -67,7 +67,6 @@ def sign_up_page():
             return redirect(url_for('login_page'))
         else:
             sign_up(SID, password)
-            flash('Account created successfully!')
             return redirect(url_for('login_page'))
     return render_template('sign_up.html', form=form)
 
