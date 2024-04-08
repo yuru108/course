@@ -67,6 +67,7 @@ def create_schedule(SID):
     cursor.close()
 
     init_schedule(SID)
+    init_required_course(SID)
 
 def init_schedule(SID):
     cursor = connection.cursor()

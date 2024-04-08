@@ -64,11 +64,19 @@ def sign_up_page():
 
         if search_account(SID):
             flash('此帳號已存在')
+            return redirect(url_for('login_page'))
         else:
             sign_up(SID, password)
             flash('Account created successfully!')
             return redirect(url_for('login_page'))
     return render_template('sign_up.html', form=form)
+
+@app.route('/logout')
+def logout():
+    global login_flag, student_info
+    login_flag = False
+    student_info = None
+    return redirect(url_for('login_page'))
 
 @app.route('/search', methods=['GET'])
 def search():

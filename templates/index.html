@@ -25,13 +25,42 @@
         th {
             background-color: rgb(236, 250, 255);
         }
-        form {
-            position: fixed;
-            top: 6%;
-            left: 35%;
-        }
         button {
             margin: 5px;
+        }
+        .banner {
+            background-color: #6350ca;
+            color: white;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            overflow: hidden;
+        }
+        .logout {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 2%;
+            padding: 15px 20px;
+        }
+        .logout:hover {
+            background-color: #4f3eb1;
+        }
+        .logout-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        .info {
+            position: fixed;
+            top: 8%;
+            left: 2%
+        }
+        .schedule {
+            position: fixed;
+            top: 29%;
+            left: 2%
         }
         .th_title {
             width: 20px;
@@ -48,19 +77,14 @@
             margin: 10px;
             width: 60px;
         }
-        .search_title {
+        .search_option {
             position: fixed;
-            top: 0%;
+            top: 8%;
             left: 35%;
         }
-        .result_title {
+        .search_result {
             position: fixed;
-            top: 24%;
-            left: 35%;
-        }
-        .result_table {
-            position: fixed;
-            top: 32%;
+            top: 34%;
             left: 35%;
         }
     </style>
@@ -112,17 +136,28 @@
     </script>
 </head>
 <body>
+    <!-- Banner -->
+    <div class="banner">
+        <div style="position: absolute; left: 2%; padding: 15px;">
+            {{ student_info.SID }}
+        </div>
+        <div style="padding: 15px; font-weight:bold;">
+            逢甲大學課程檢索系統
+        </div>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}" class="logout-link">登出</a>
+        </div>
+    </div>
     <!-- Student Info -->
-    <div>
+    <div class="info">
         <h2>Student Info</h2>
-        <p>SID: {{ student_info.SID }}</p>
         <p>最高學分： 30</p>
         <p>最低學分： 12</p>
         <p>目前學分: {{ student_info.total_credit }}</p>
         <!-- Add more fields as needed -->
     </div>
     <!-- Schedule Table -->
-    <table>
+    <table class="schedule">
         <thead>
             <tr>
                 <th class="th_title">Time</th>
@@ -158,8 +193,8 @@
         </tbody>
     </table>
     <!-- Search Checkbox -->
-    <div>
-        <h2 class="search_title">Search</h2>
+    <div class="search_option">
+        <h2>Search</h2>
         <input type="hidden" id="search_url" value="{{ url_for('search') }}">
         <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateForm()">
             <label>
@@ -201,10 +236,10 @@
         </form>
     </div>
     <!-- Search Result -->
-    <div>
-        <h2 class="result_title">Search Result</h2>
+    <div class="search_result">
+        <h2>Search Result</h2>
         {% if search_result %}
-        <table class="result_table">
+        <table>
             <thead>
                 <tr>
                     <th>選課代碼</th>
