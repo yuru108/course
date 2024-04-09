@@ -19,7 +19,7 @@ def search_courses(search_options):
     if 'cname' in search_options:
         sql_query += f" AND cname = '{search_options['cname']}'"
     if 'professor' in search_options:
-        sql_query += f" AND professor = '{search_options['professor']}'"
+        sql_query += f" AND professor = (SELECT `PID` FROM `professor` WHERE `name`='{search_options['professor']}')"
     if 'type' in search_options:
         sql_query += f" AND type = '{search_options['type']}'"
     if 'major' in search_options:
@@ -35,4 +35,17 @@ def search_courses(search_options):
     cursor.close()
     return result
 
+def in_schedule(SID, CID):
+    cursor = connection.cursor()
+    try:
+        schedule_name = "schedule_"+SID
+        cursor.execute(f"SELECT * FROM `{schedule_name}` WHERE `course_id`={CID};")
+        result = cursor.fetchone()
+        if result:
+            return True
+        return False
+    finally:
+        cursor.fetchall()
+        cursor.close()
+        
 # search_options = {'ID': None, 'cname': '', 'professor': '', 'type': '必修', 'major': '', 'time': None}
