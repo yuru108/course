@@ -1,4 +1,5 @@
 from connect_db import student_data, course_data, select_table, add_schedule
+from search import same_course
 
 # 判斷是否有衝堂
 def check_schedule(SID, start, end):
@@ -34,7 +35,7 @@ def judge(SID, CID):
         return False
 
     #判斷是否選擇同名課程
-    elif course.course_id == 
+    elif same_course(student.SID, course.course_id):
         print('不可加選同一課程')
         return False
 
