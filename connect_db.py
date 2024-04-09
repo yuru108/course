@@ -1,6 +1,6 @@
 import yaml
 import mysql.connector
-from init import Student, Course
+from init import Student, Course, Professor
 
 def load_config(filename="config.yml"):
     with open(filename, "r", encoding="utf-8") as config_file:
@@ -36,6 +36,16 @@ def course_data(CID):
     cursor.close()
     return course
 
+def professor_data(PID):
+    cursor = connection.cursor()
+    cursor.execute(f'SELECT * FROM `professor` WHERE `PID`={PID};')
+    result = cursor.fetchone()
+
+    professor = Professor(PID=result[0], name=result[1], major=result[2])
+
+    cursor.close()
+    return professor
+
 def select_table(table):
     cursor = connection.cursor()
     cursor.execute(f'SELECT * FROM `{table}`;')
@@ -67,6 +77,7 @@ def create_schedule(SID):
     cursor.close()
 
     init_schedule(SID)
+    init_required_course(SID)
 
 def init_schedule(SID):
     cursor = connection.cursor()
