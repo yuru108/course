@@ -33,7 +33,11 @@ def judge(SID, CID):
         print('學分已達上限')
         return False
 
-    #判斷是否選擇同名課程(待補)
+    #判斷是否選擇同名課程
+    elif course.course_id == 
+        print('不可加選同一課程')
+        return False
+
     
     return True
 
