@@ -23,6 +23,7 @@ def student_data(SID):
 
     student = Student(SID=result[0], name=result[1], major=result[2], grade=result[3], total_credit=result[4])
 
+    connection.commit()
     cursor.close()
     return student
 
@@ -33,6 +34,7 @@ def course_data(CID):
 
     course = Course(ID=result[0], course_id=result[1], cname=result[2], professor=result[3], type=result[4], major=result[5], credit=result[6], max_member=result[7], current_member=result[8], start=result[9], end=result[10])
 
+    connection.commit()
     cursor.close()
     return course
 
@@ -43,6 +45,7 @@ def professor_data(PID):
 
     professor = Professor(PID=result[0], name=result[1], major=result[2])
 
+    connection.commit()
     cursor.close()
     return professor
 
@@ -51,10 +54,11 @@ def select_table(table):
     cursor.execute(f'SELECT * FROM `{table}`;')
     result = cursor.fetchall()
     
+    connection.commit()
     cursor.close()
     return result
 
-def update_credit(SID, CID):
+def update_credit(SID, CID, status):
     cursor = connection.cursor()
     cursor.execute('SELECT `total_credit` FROM `student` WHERE `SID`=%s;', (SID, ))
     current_credit = cursor.fetchone()[0]
@@ -62,7 +66,12 @@ def update_credit(SID, CID):
     cursor.execute(f'SELECT `credit` FROM `course` WHERE `ID`={CID};')
     course_credit = cursor.fetchone()[0]
 
-    cursor.execute(f'UPDATE `student` SET `total_credit`={current_credit+course_credit} where `SID`=%s;', (SID, ))
+    if status == 1:
+        new_credit = current_credit+course_credit
+    else:
+        new_credit = current_credit-course_credit
+
+    cursor.execute(f'UPDATE `student` SET `total_credit`={new_credit} where `SID`=%s;', (SID, ))
 
     connection.commit()
     cursor.close()
@@ -104,7 +113,6 @@ def add_schedule(SID, CID):
     start, end = (cursor.fetchall())[0]
 
     cursor.execute(f'UPDATE `{schedule_name}` SET `course_id`={CID} WHERE `time_id` BETWEEN {start} AND {end};')
-    connection.commit()
 
     # update member
     cursor.execute(f'SELECT `current_member` FROM `course` WHERE `ID`={CID};')
@@ -112,7 +120,7 @@ def add_schedule(SID, CID):
     cursor.execute(f'UPDATE `course` SET `current_member`={new_member} WHERE `ID`={CID};')
     connection.commit()
 
-    update_credit(SID, CID)
+    update_credit(SID, CID, 1)
 
     cursor.close()
 
@@ -121,8 +129,16 @@ def remove_schedule(SID, CID):
     schedule = 'schedule_'+SID
 
     cursor.execute(f'UPDATE `{schedule}` SET `course_id`=NULL WHERE `course_id`={CID};')
-
     connection.commit()
+
+    # update member
+    cursor.execute(f'SELECT `current_member` FROM `course` WHERE `ID`={CID};')
+    new_member = int(cursor.fetchone()[0]) - 1
+    cursor.execute(f'UPDATE `course` SET `current_member`={new_member} WHERE `ID`={CID};')
+    connection.commit()
+
+    update_credit(SID, CID, -1)
+
     cursor.close()
 
 def init_required_course(SID):
@@ -131,9 +147,12 @@ def init_required_course(SID):
 
     cursor.execute(f'SELECT `CID` FROM `required_course` WHERE `major`=%s AND `grade`=%s;', (student.major, student.grade))
     required_course = cursor.fetchall()
+    connection.commit()
 
     for i in required_course:
         add_schedule(SID, i[0])
+
+    cursor.close()
 
 # ========= test ===========
 

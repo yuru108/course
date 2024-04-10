@@ -31,6 +31,7 @@ def search_courses(search_options):
     cursor = connection.cursor()
     cursor.execute(sql_query)
     result = cursor.fetchall()
+    connection.commit()
         
     cursor.close()
     return result
@@ -46,19 +47,21 @@ def in_schedule(SID, CID):
         return False
     finally:
         cursor.fetchall()
+        connection.commit()
         cursor.close()
 
 def same_course(SID, course_id):
     cursor = connection.cursor()
     try:
         schedule_name = "schedule_"+SID
-        cursor.execute(f"SELECT * FROM `schedule_D1150459` s JOIN `course` c ON(s.course_id = c.ID) WHERE c.course_id = {course_id};")
+        cursor.execute(f"SELECT * FROM {schedule_name} s JOIN `course` c ON(s.course_id = c.ID) WHERE c.course_id = {course_id};")
         result = cursor.fetchone()
         if result:
             return True
         return False
     finally:
         cursor.fetchall()
+        connection.commit()
         cursor.close()
         
 # search_options = {'ID': None, 'cname': '', 'professor': '', 'type': '必修', 'major': '', 'time': None}

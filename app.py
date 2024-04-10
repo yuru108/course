@@ -1,10 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from connect_db import load_config, student_data, course_data, professor_data, select_table
 from account import search_account, login, sign_up
 from search import search_courses, in_schedule
+from add_course import add_course
+from withdraw_course import withdraw_course
 
 app = Flask(__name__)
 app.secret_key = load_config().get('app', {}).get('secret_key', 'default_secret_key')
@@ -23,7 +25,6 @@ def root():
 
 @app.route('/index')
 def index():
-    global student_info
     if login_flag == False:
         return redirect(url_for('login_page'))
 
@@ -79,6 +80,7 @@ def logout():
 
 @app.route('/search', methods=['GET'])
 def search():
+    global student_info
     search_options = {}
     for key, value in request.args.items():
         if key.endswith('_input'):
@@ -87,10 +89,28 @@ def search():
 
     search_result = search_courses(search_options)
 
+    student_info = student_data(student_info.SID)
+
     schedule_name = 'schedule_'+student_info.SID
     schedule_data = select_table(schedule_name)
 
     return render_template('index.html', search_result=search_result, student_info=student_info, schedule=schedule_data, course_data=course_data, professor_data=professor_data, in_schedule=in_schedule)
+
+@app.route('/add_course', methods=['POST'])
+def add_course_route():
+    data = request.get_json()
+    SID = data.get('SID')
+    CID = data.get('CID')
+    result = add_course(SID, CID)
+    return jsonify(result)
+
+@app.route('/withdraw_course', methods=['POST'])
+def withdraw_course_route():
+    data = request.get_json()
+    SID = data.get('SID')
+    CID = data.get('CID')
+    result = withdraw_course(SID, CID)
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
