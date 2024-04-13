@@ -18,7 +18,7 @@ class Course:
         self.course_id = course_id      # 課程代碼
         self.cname = cname              # 課堂名稱
         self.professor = professor      # 教授(id)
-        self.type = type                # 必修/選修/通識
+        self.type = type                # 必修/選修
         self.major = major
         self.credit = credit            # 學分
         self.max_member = max_member

@@ -11,43 +11,37 @@ def check_schedule(SID, start, end):
             return False            # 有衝堂
     return True                     # 無衝堂
 
-def judge(SID, CID):
+def add_course(SID, CID):
     student = student_data(SID)
     course = course_data(CID)
 
     if check_schedule(SID, course.start, course.end) == False:
-        print('所選時段已有課程')
-        return False
+        error = '所選時段已有課程'
+        return False, error
 
     #判斷是否達到最大人數
     elif course.max_member == course.current_member:
-        print('人數已滿')
-        return False
+        error = '人數已滿'
+        return False, error
 
     #判斷是否為本系
     elif student.major != course.major and course.major != None:
-        print('不可選修他系課程')
-        return False
+        error = '不可選修他系課程'
+        return False, error
 
     #不可超過30學分
     elif student.total_credit + course.credit >= 30:
-        print('學分已達上限')
-        return False
+        error = '學分已達上限'
+        return False, error
 
     #判斷是否選擇同名課程
     elif same_course(student.SID, course.course_id):
-        print('不可加選同一課程')
-        return False
-
+        error = '不可加選同一課程'
+        return False, error
     
-    return True
-
-def add_course(SID, CID):
-    if judge(SID, CID):
-        add_schedule(SID, CID)
-        print('加選成功')
     else:
-        print('加選失敗')
+        add_schedule(SID, CID)
+        return True, None
 
 # ========= test ===========
 

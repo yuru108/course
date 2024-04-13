@@ -31,7 +31,7 @@ def index():
     schedule_name = 'schedule_'+student_info.SID
     schedule_data = select_table(schedule_name)
 
-    return render_template('index.html', schedule=schedule_data, student_info=student_info, course_data=course_data)
+    return render_template('index.html', schedule=schedule_data, student_info=student_info, course_data=course_data, professor_data=professor_data)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -101,16 +101,22 @@ def add_course_route():
     data = request.get_json()
     SID = data.get('SID')
     CID = data.get('CID')
-    result = add_course(SID, CID)
-    return jsonify(result)
+    result, error_message = add_course(SID, CID)
+    if result:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': error_message})
 
 @app.route('/withdraw_course', methods=['POST'])
 def withdraw_course_route():
     data = request.get_json()
     SID = data.get('SID')
     CID = data.get('CID')
-    result = withdraw_course(SID, CID)
-    return jsonify(result)
+    result, error_message = withdraw_course(SID, CID)
+    if result:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': error_message})
 
 if __name__ == '__main__':
     app.run(debug=True)

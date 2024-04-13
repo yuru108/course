@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         h2 {
             font-size: 18px;
@@ -92,13 +93,41 @@
             padding: 6px;
             border-radius: 8px;
         }
+        .page-select {
+            display: flex;
+            flex-direction: row;
+            position: fixed;
+            top: 9%;
+            left: 33%;
+        }
+        .select-option {
+            padding: 10px 10px 5px 10px;
+            margin: 7px;
+            border-bottom: 1px solid #000000;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .select-option:hover {
+            background-color: #6350ca;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+        }
+        .active-option {
+            color: #6350ca;
+            font-weight: 800;
+            padding: 10px 10px 5px 10px;
+            margin: 7px;
+            border-bottom: 1px solid #e69233;
+        }
         .search_option {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: fixed;
-            top: 10%;
-            left: 31%;
+            top: 16%;
+            left: 33%;
+            border-radius: 4px;
         }
         .search_option .row {
             display: flex;
@@ -163,8 +192,8 @@
         }
         .search_result {
             position: fixed;
-            top: 30%;
-            left: 31%;
+            top: 35%;
+            left: 33%;
         }
         .add-button {
             background-color: #13c513;
@@ -242,8 +271,12 @@
             })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
-                location.reload();
+                if (result.success) {
+                    successAlert("加選成功");
+                }
+                else {
+                    errorAlert("加選失敗", result.error);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -260,12 +293,90 @@
             })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
-                location.reload();
+                if (result.success) {
+                    successAlert('退選成功');
+                }
+                else {
+                    errorAlert("退選失敗", result.error);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            var optionState = {
+                search: 1,
+                schedule: 0
+            };
+
+            function updateOptionStyles() {
+                var options = document.querySelectorAll(".select-option");
+                options.forEach(function(option) {
+                    option.classList.remove("active-option");
+                });
+                if (optionState.search === 1) {
+                    document.getElementById("searchOption").classList.add("active-option");
+                }
+                if (optionState.schedule === 1) {
+                    document.getElementById("scheduleOption").classList.add("active-option");
+                }
+            }
+
+            function handleOptionClick(option) {
+                for (var key in optionState) {
+                    if (key === option) {
+                        optionState[key] = 1;
+                    } else {
+                        optionState[key] = 0;
+                    }
+                }
+
+                if (optionState.search === 1) {
+                    document.getElementById("searchSection").style.display = "block";
+                } else {
+                    document.getElementById("searchSection").style.display = "none";
+                }
+                if (optionState.schedule === 1) {
+                    document.getElementById("scheduleSection").style.display = "block";
+                } else {
+                    document.getElementById("scheduleSection").style.display = "none";
+                }
+                updateOptionStyles();
+            }
+
+            handleOptionClick("search");
+            updateOptionStyles();
+
+            document.getElementById("searchOption").addEventListener("click", function() {
+                handleOptionClick("search");
+            });
+            document.getElementById("scheduleOption").addEventListener("click", function() {
+                handleOptionClick("schedule");
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        const successAlert = (title) => {
+            Swal.fire({
+                icon: 'success',
+                title: title
+            }).then((result) => {
+                if (result.isConfirmed){
+                    location.reload()}
+                })
+        }
+
+        const errorAlert = (title, message) => {
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: message
+            }).then((result) => {
+                if (result.isConfirmed){
+                    location.reload()}
+                })
         }
     </script>
 </head>
@@ -328,117 +439,170 @@
             {% endfor %}
         </tbody>
     </table>
-    <!-- Search Checkbox -->
-    <div class="search_option">
-        <input type="hidden" id="search_url" value="{{ url_for('search') }}">
-        <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateForm()">
-            <div class="row">
-                <div class="flex-col">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="ID" onclick="toggleInput(this)">
-                        <input type="text" class="w-full form--item" name="ID_input" placeholder=" " disabled>
-                        <label class="label">選課代碼</label>
-                    </label>
-                </div>
-                <div class="flex-col">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="cname" onclick="toggleInput(this)">
-                        <input type="text" class="w-full form--item" name="cname_input" placeholder=" " disabled>
-                        <label class="label">課堂名稱</label>
-                    </label>
-                </div>
-                <div class="flex-col">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="professor" onclick="toggleInput(this)">
-                        <input type="text" class="w-full form--item" name="professor_input" placeholder=" " disabled>
-                        <label class="label">開課教授</label>
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="flex-col">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="major" onclick="toggleInput(this)">
-                        <input type="text" class="w-full form--item" name="major_input" placeholder=" " disabled>
-                        <label class="label">系所</label>
-                    </label>
-                </div>
-                <div class="flex-col" style="padding: 10px 0px;">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="type" onclick="toggleInput(this)"> 必選修: 
-                        <select name="type_input" id="type_input" style="width: 46%;" disabled>
-                            <option>必修</option>
-                            <option>選修</option>
-                        </select>
-                    </label>
-                </div>
-                <div class="flex-col" style="padding: 10px 0px;">
-                    <label class="flex">
-                        <input type="checkbox" name="search_option" value="time" onclick="toggleInput(this)"> Time: 
-                        <select name="day_input" id="day_input" disabled>
-                            <option value="1">星期一</option>
-                            <option value="2">星期二</option>
-                            <option value="3">星期三</option>
-                            <option value="4">星期四</option>
-                            <option value="5">星期五</option>
-                        </select>
-                        <select name="period_input" id="period_input" disabled>
-                            {% for period in range(1, 15) %}
-                                <option value="{{ period }}">{{ period }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                </div>
-            </div>
-            <button type="search" class="search-button">Search</button>
-        </form>
+    <!-- Page Select Option -->
+    <div class="page-select">
+        <div class="select-option active-option" id="searchOption">Search</div>
+        <div class="select-option active-option" id="scheduleOption">Schedule</div>
     </div>
-    <!-- Search Result -->
-    <div class="search_result">
-        <h2>Search Result</h2>
-        {% if search_result %}
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 64px;">選課代碼</th>
-                    <th style="width: 64px;">課程編碼</th>
-                    <th style="width: 85px;">課堂名稱</th>
-                    <th>教授</th>
-                    <th>必選修</th>
-                    <th>系別</th>
-                    <th>學分</th>
-                    <th>人數</th>
-                    <th>時間</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in search_result %}
-                    {% set professor = professor_data(course[3]) %}
+    <!-- Search -->
+    <div id="searchSection" style="display: block;">
+        <!-- Search Checkbox -->
+        <div class="search_option">
+            <input type="hidden" id="search_url" value="{{ url_for('search') }}">
+            <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateForm()">
+                <div class="row">
+                    <div class="flex-col">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="ID" onclick="toggleInput(this)">
+                            <input type="text" class="w-full form--item" name="ID_input" placeholder=" " disabled>
+                            <label class="label">選課代碼</label>
+                        </label>
+                    </div>
+                    <div class="flex-col">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="cname" onclick="toggleInput(this)">
+                            <input type="text" class="w-full form--item" name="cname_input" placeholder=" " disabled>
+                            <label class="label">課堂名稱</label>
+                        </label>
+                    </div>
+                    <div class="flex-col">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="professor" onclick="toggleInput(this)">
+                            <input type="text" class="w-full form--item" name="professor_input" placeholder=" " disabled>
+                            <label class="label">開課教授</label>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="flex-col">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="major" onclick="toggleInput(this)">
+                            <input type="text" class="w-full form--item" name="major_input" placeholder=" " disabled>
+                            <label class="label">系所</label>
+                        </label>
+                    </div>
+                    <div class="flex-col" style="padding: 10px 0px;">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="type" onclick="toggleInput(this)"> 必選修: 
+                            <select name="type_input" id="type_input" style="width: 46%;" disabled>
+                                <option>必修</option>
+                                <option>選修</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="flex-col" style="padding: 10px 0px;">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="time" onclick="toggleInput(this)"> Time: 
+                            <select name="day_input" id="day_input" disabled>
+                                <option value="1">星期一</option>
+                                <option value="2">星期二</option>
+                                <option value="3">星期三</option>
+                                <option value="4">星期四</option>
+                                <option value="5">星期五</option>
+                            </select>
+                            <select name="period_input" id="period_input" disabled>
+                                {% for period in range(1, 15) %}
+                                    <option value="{{ period }}">{{ period }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button type="search" class="search-button">Search</button>
+            </form>
+        </div>
+        <!-- Search Result -->
+        <div class="search_result">
+            <h2>Search Result</h2>
+            <div style="padding-right: 20px; height: 374px; overflow-y: auto;">
+                {% if search_result %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 64px;">選課代碼</th>
+                            <th style="width: 64px;">課程編碼</th>
+                            <th style="width: 85px;">課堂名稱</th>
+                            <th>教授</th>
+                            <th>必選修</th>
+                            <th>系別</th>
+                            <th>學分</th>
+                            <th>人數</th>
+                            <th>時間</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in search_result %}
+                            {% set professor = professor_data(course[3]) %}
+                            <tr>
+                                <td>{{ course[0] }}</td>
+                                <td>{{ course[1] }}</td>
+                                <td style="padding: 3px;">{{ course[2] }}</td>
+                                <td>{{ professor.name }}</td>
+                                <td>{{ course[4] }}</td>
+                                <td>{{ course[5] }}</td>
+                                <td>{{ course[6] }}</td>
+                                <td>{{ course[8] }}/{{ course[7] }}</td>
+                                <td>({{ course[9]//14+1 }}) {{ course[9]%14 }}-{{ course[10]%14 }}</td>
+                                <td style="padding: 4px;">
+                                    {% if in_schedule(student_info.SID, course[0]) %}
+                                        <div class="withdraw-button" onclick="withdrawCourse('{{ student_info.SID }}', '{{ course[0] }}')">退選</div>
+                                    {% else %}
+                                        <div class="add-button" onclick="addCourse('{{ student_info.SID }}', '{{ course[0] }}')">加選</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No result</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Schedule List -->
+    <div id="scheduleSection" style="position: fixed; top: 17%; left: 33%; display: block;">
+        <h2>Schedule</h2>
+        <div style="padding-right: 20px; height: 497px; overflow-y: auto;">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ course[0] }}</td>
-                        <td>{{ course[1] }}</td>
-                        <td style="padding: 3px;">{{ course[2] }}</td>
-                        <td>{{ professor.name }}</td>
-                        <td>{{ course[4] }}</td>
-                        <td>{{ course[5] }}</td>
-                        <td>{{ course[6] }}</td>
-                        <td>{{ course[8] }}/{{ course[7] }}</td>
-                        <td>({{ course[9]//14+1 }}) {{ course[9]%14 }}-{{ course[10]%14 }}</td>
-                        <td style="padding: 4px;">
-                            {% if in_schedule(student_info.SID, course[0]) %}
-                                <div class="withdraw-button" onclick="withdrawCourse('{{ student_info.SID }}', '{{ course[0] }}')">退選</div>
-                            {% else %}
-                                <div class="add-button" onclick="addCourse('{{ student_info.SID }}', '{{ course[0] }}')">加選</div>
-                            {% endif %}
-                        </td>
+                        <th style="width: 64px;">選課代碼</th>
+                        <th style="width: 64px;">課程編碼</th>
+                        <th style="width: 85px;">課堂名稱</th>
+                        <th>教授</th>
+                        <th>必選修</th>
+                        <th>系別</th>
+                        <th>學分</th>
+                        <th>人數</th>
+                        <th>時間</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No result</p>
-        {% endif %}
-    </div>  
+                </thead>
+                <tbody>
+                    {% for row in schedule %}
+                        {% if row[1] %}
+                            {% set course = course_data(row[1]) %}
+                            <tr>
+                                <td>{{ course.ID }}</td>
+                                <td>{{ course.course_id }}</td>
+                                <td style="padding: 3px;"">{{ course.cname }}</td>
+                                <td>{{ professor_data(course.professor).name }}</td>
+                                <td>{{ course.type }}</td>
+                                <td>{{ course.major }}</td>
+                                <td>{{ course.credit }}</td>
+                                <td>{{ course.current_member }} / {{ course.max_member }}</td>
+                                <td>({{ course.start//14+1 }}) {{ course.start%14 }}-{{ course.end%14 }}</td>
+                                <td style="padding: 4px;">
+                                    <div class="withdraw-button" onclick="withdrawCourse('{{ student_info.SID }}', '{{ course.ID }}')">退選</div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
