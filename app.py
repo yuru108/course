@@ -87,7 +87,7 @@ def search():
             option_name = key.split('_input')[0]
             search_options[option_name] = value
 
-    search_result = search_courses(search_options)
+    search_result = search_courses(search_options, student_info)
 
     student_info = student_data(student_info.SID)
 

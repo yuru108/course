@@ -192,7 +192,7 @@
         }
         .search_result {
             position: fixed;
-            top: 35%;
+            top: 40%;
             left: 33%;
         }
         .add-button {
@@ -221,7 +221,17 @@
             var periodSelect = document.getElementById("period_input");
             var typeSelect = document.getElementById("type_input");
             
-            if (element.value !== "time" && element.value !== "type"){
+            if (element.value === "selectable") {
+                if (element.checked) {
+                    input.disabled = false;
+                    input.value = 1;
+                }
+                else {
+                    input.disabled = true;
+                    input.value = '';
+                }
+            }
+            else if (element.value !== "time" && element.value !== "type"){
                 if (element.checked) {
                     input.disabled = false;
                     input.required = true;
@@ -357,6 +367,7 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+    <!-- Alert -->
     <script>
         const successAlert = (title) => {
             Swal.fire({
@@ -446,7 +457,7 @@
     </div>
     <!-- Search -->
     <div id="searchSection" style="display: block;">
-        <!-- Search Checkbox -->
+        <!-- Search Option -->
         <div class="search_option">
             <input type="hidden" id="search_url" value="{{ url_for('search') }}">
             <form action="{{ url_for('search') }}" method="GET" onsubmit="return validateForm()">
@@ -508,13 +519,22 @@
                         </label>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="flex-col">
+                        <label class="flex">
+                            <input type="checkbox" name="search_option" value="selectable" onclick="toggleInput(this)">
+                            <input type="text" name="selectable_input" id="selctable_input" disabled hidden>
+                            僅列出可選課程
+                        </label>
+                    </div>
+                </div>
                 <button type="search" class="search-button">Search</button>
             </form>
         </div>
         <!-- Search Result -->
         <div class="search_result">
             <h2>Search Result</h2>
-            <div style="padding-right: 20px; height: 374px; overflow-y: auto;">
+            <div style="padding-right: 20px; height: 340px; overflow-y: auto;">
                 {% if search_result %}
                 <table>
                     <thead>
@@ -524,10 +544,10 @@
                             <th style="width: 85px;">課堂名稱</th>
                             <th>教授</th>
                             <th>必選修</th>
-                            <th>系別</th>
+                            <th style="width: 64px;">系別</th>
                             <th>學分</th>
                             <th>人數</th>
-                            <th>時間</th>
+                            <th style="width: 64px;">時間</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -573,10 +593,10 @@
                         <th style="width: 85px;">課堂名稱</th>
                         <th>教授</th>
                         <th>必選修</th>
-                        <th>系別</th>
+                        <th style="width: 64px;">系別</th>
                         <th>學分</th>
                         <th>人數</th>
-                        <th>時間</th>
+                        <th style="width: 64px;">時間</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -587,7 +607,7 @@
                             <tr>
                                 <td>{{ course.ID }}</td>
                                 <td>{{ course.course_id }}</td>
-                                <td style="padding: 3px;"">{{ course.cname }}</td>
+                                <td style="padding: 3px;">{{ course.cname }}</td>
                                 <td>{{ professor_data(course.professor).name }}</td>
                                 <td>{{ course.type }}</td>
                                 <td>{{ course.major }}</td>

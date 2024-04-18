@@ -1,5 +1,5 @@
 import mysql.connector
-from connect_db import load_config
+from connect_db import load_config, select_table
 
 config_data = load_config()
 
@@ -11,7 +11,7 @@ connection = mysql.connector.connect(
     database=config_data.get('database', {}).get('database', '')
 )
 
-def search_courses(search_options):
+def search_courses(search_options, student_info):
     sql_query = "SELECT * FROM `course` WHERE 1=1"
     
     if 'ID' in search_options:
@@ -31,10 +31,19 @@ def search_courses(search_options):
     cursor = connection.cursor()
     cursor.execute(sql_query)
     result = cursor.fetchall()
+    condition = []
+
+    if 'selectable' in search_options:
+        for i in result:
+            if check_schedule(student_info.SID, i[9], i[10]) and i[7] > i[8] and (student_info.major == i[5] or i[5] == '通識學院') and student_info.total_credit + i[6] <= 30 and same_course(student_info.SID, i[1]) == False and in_schedule(student_info.SID, i[0]) == False:
+                condition.append(i)
+    else:
+        condition = result
+
     connection.commit()
         
     cursor.close()
-    return result
+    return condition
 
 def in_schedule(SID, CID):
     cursor = connection.cursor()
@@ -63,5 +72,19 @@ def same_course(SID, course_id):
         cursor.fetchall()
         connection.commit()
         cursor.close()
-        
-# search_options = {'ID': None, 'cname': '', 'professor': '', 'type': '必修', 'major': '', 'time': None}
+
+# 判斷是否有衝堂
+def check_schedule(SID, start, end):
+    schedule_name = 'schedule_'+SID
+    schedule = select_table(schedule_name)
+
+    for i in range(start-1, end):
+        if schedule[i][1] != None:
+            return False            # 有衝堂
+    return True                     # 無衝堂
+
+# SID = "D1150459"
+# student_info = student_data(SID)
+# search_options = {'type': '選修', 'selectable': 1}
+
+# search_courses(search_options, student_info)
