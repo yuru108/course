@@ -1,5 +1,5 @@
 import mysql.connector
-from connect_db import load_config, select_table
+from connect_db import load_config, select_table, course_data
 
 config_data = load_config()
 
@@ -35,13 +35,12 @@ def search_courses(search_options, student_info):
 
     if 'selectable' in search_options:
         for i in result:
-            if check_schedule(student_info.SID, i[9], i[10]) and i[7] > i[8] and (student_info.major == i[5] or i[5] == '通識學院') and student_info.total_credit + i[6] <= 30 and same_course(student_info.SID, i[1]) == False and in_schedule(student_info.SID, i[0]) == False:
+            if selectable(i[0], student_info):
                 condition.append(i)
     else:
         condition = result
 
     connection.commit()
-        
     cursor.close()
     return condition
 
@@ -83,8 +82,15 @@ def check_schedule(SID, start, end):
             return False            # 有衝堂
     return True                     # 無衝堂
 
+def selectable(CID, student):
+    c = course_data(CID)
+
+    if check_schedule(student.SID, c.start, c.end) and (student.major == c.major or c.major == '通識學院') and student.total_credit + c.credit <= 30 and same_course(student.SID, c.course_id) == False and in_schedule(student.SID, c.ID) == False:
+        return True
+    return False
+
 # SID = "D1150459"
 # student_info = student_data(SID)
-# search_options = {'type': '選修', 'selectable': 1}
+# search_options = {'selectable': 1}
 
 # search_courses(search_options, student_info)

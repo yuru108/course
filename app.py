@@ -4,9 +4,10 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from connect_db import load_config, student_data, course_data, professor_data, select_table
 from account import search_account, login, sign_up
-from search import search_courses, in_schedule
+from search import search_courses, in_schedule, selectable
 from add_course import add_course
 from withdraw_course import withdraw_course
+from follow import follow_list, is_followed, add_follow, withdraw_follow, draw_queue
 
 app = Flask(__name__)
 app.secret_key = load_config().get('app', {}).get('secret_key', 'default_secret_key')
@@ -31,7 +32,9 @@ def index():
     schedule_name = 'schedule_'+student_info.SID
     schedule_data = select_table(schedule_name)
 
-    return render_template('index.html', schedule=schedule_data, student_info=student_info, course_data=course_data, professor_data=professor_data)
+    follow = follow_list(student_info.SID)
+
+    return render_template('index.html', schedule=schedule_data, student_info=student_info, follow_list=follow, course_data=course_data, professor_data=professor_data, selectable=selectable)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -94,7 +97,9 @@ def search():
     schedule_name = 'schedule_'+student_info.SID
     schedule_data = select_table(schedule_name)
 
-    return render_template('index.html', search_result=search_result, student_info=student_info, schedule=schedule_data, course_data=course_data, professor_data=professor_data, in_schedule=in_schedule)
+    follow = follow_list(student_info.SID)
+
+    return render_template('index.html', search_result=search_result, student_info=student_info, schedule=schedule_data, follow_list=follow, course_data=course_data, professor_data=professor_data, in_schedule=in_schedule, is_followed=is_followed, selectable=selectable)
 
 @app.route('/add_course', methods=['POST'])
 def add_course_route():
@@ -114,9 +119,27 @@ def withdraw_course_route():
     CID = data.get('CID')
     result, error_message = withdraw_course(SID, CID)
     if result:
+        draw_queue(CID)
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'error': error_message})
+    
+@app.route('/follow_course', methods=['POST'])
+def follow_course_route():
+    data = request.get_json()
+    SID = data.get('SID')
+    CID = data.get('CID')
+    act = data.get('act')
+
+    try:
+        if act == 0:
+            withdraw_follow(SID, CID)
+        elif act == 1:
+            add_follow(SID, CID)
+    except:
+        return jsonify({'success': False, 'error': "Error 請再試一次"})
+    else:
+        return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True)

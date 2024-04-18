@@ -148,11 +148,11 @@ def init_required_course(SID):
     cursor.execute(f'SELECT `CID` FROM `required_course` WHERE `major`=%s AND `grade`=%s;', (student.major, student.grade))
     required_course = cursor.fetchall()
     connection.commit()
+    cursor.close()
 
     for i in required_course:
         add_schedule(SID, i[0])
 
-    cursor.close()
 
 # ========= test ===========
 

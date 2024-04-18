@@ -1,4 +1,3 @@
-from init import Student, Course
 from connect_db import student_data, course_data, remove_schedule
 
 def withdraw_course(SID,CID):

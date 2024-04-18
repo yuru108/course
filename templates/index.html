@@ -54,9 +54,10 @@
             top: 0;
             right: 2%;
             padding: 15px 20px;
-        }
-        .logout:hover {
-            background-color: #4f3eb1;
+
+            &:hover {
+                background-color: #4f3eb1;
+            }
         }
         .logout-link {
             text-decoration: none;
@@ -105,13 +106,14 @@
             margin: 7px;
             border-bottom: 1px solid #000000;
             transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .select-option:hover {
-            background-color: #6350ca;
-            color: white;
-            cursor: pointer;
-            border-radius: 4px;
-            border: none;
+
+            &:hover {
+                background-color: #6350ca;
+                color: white;
+                cursor: pointer;
+                border-radius: 4px;
+                border: none;
+            }
         }
         .active-option {
             color: #6350ca;
@@ -186,9 +188,10 @@
             cursor: pointer;
             border: none;
             border-radius: 12px;
-        }
-        .search-button:hover {
-            background-color: #1ca01c;
+
+            &:hover {
+                background-color: #1ca01c;
+            }
         }
         .search_result {
             position: fixed;
@@ -200,18 +203,32 @@
             color: white;
             cursor: pointer;
             border-radius: 12px;
-        }
-        .add-button:hover {
-            background-color: #1ca01c;
+
+            &:hover {
+                background-color: #1ca01c;
+            }
         }
         .withdraw-button {
             background-color: #f03c3c;
             color: white;
             cursor: pointer;
             border-radius: 12px;
+
+            &:hover {
+                background-color: #bb2929;
+            }
         }
-        .withdraw-button:hover {
-            background-color: #bb2929;
+        .follow-button {
+            background-color: #6350ca;
+            margin-top: 3px;
+            margin-bottom: 3px;
+            color: white;
+            cursor: pointer;
+            border-radius: 12px;
+
+            &:hover {
+                background-color: #4f3eb1;
+            }
         }
     </style>
     <script>
@@ -314,10 +331,30 @@
                 console.error('Error:', error);
             });
         }
+        function followCourse(SID, CID, act) {
+            var data = {SID: SID, CID: CID, act: act};
+            fetch('/follow_course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    successAlert('成功');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
         document.addEventListener("DOMContentLoaded", function() {
             var optionState = {
                 search: 1,
-                schedule: 0
+                schedule: 0,
+                follow: 0
             };
 
             function updateOptionStyles() {
@@ -330,6 +367,9 @@
                 }
                 if (optionState.schedule === 1) {
                     document.getElementById("scheduleOption").classList.add("active-option");
+                }
+                if (optionState.follow === 1) {
+                    document.getElementById("followOption").classList.add("active-option");
                 }
             }
 
@@ -352,6 +392,11 @@
                 } else {
                     document.getElementById("scheduleSection").style.display = "none";
                 }
+                if (optionState.follow === 1) {
+                    document.getElementById("followSection").style.display = "block";
+                } else {
+                    document.getElementById("followSection").style.display = "none";
+                }
                 updateOptionStyles();
             }
 
@@ -363,6 +408,9 @@
             });
             document.getElementById("scheduleOption").addEventListener("click", function() {
                 handleOptionClick("schedule");
+            });
+            document.getElementById("followOption").addEventListener("click", function() {
+                handleOptionClick("follow");
             });
         });
     </script>
@@ -454,6 +502,7 @@
     <div class="page-select">
         <div class="select-option active-option" id="searchOption">Search</div>
         <div class="select-option active-option" id="scheduleOption">Schedule</div>
+        <div class="select-option active-option" id="followOption">Follow</div>
     </div>
     <!-- Search -->
     <div id="searchSection" style="display: block;">
@@ -568,7 +617,15 @@
                                     {% if in_schedule(student_info.SID, course[0]) %}
                                         <div class="withdraw-button" onclick="withdrawCourse('{{ student_info.SID }}', '{{ course[0] }}')">退選</div>
                                     {% else %}
-                                        <div class="add-button" onclick="addCourse('{{ student_info.SID }}', '{{ course[0] }}')">加選</div>
+                                        {% if selectable(course[0], student_info) and course[8] == course[7] %}
+                                            {% if is_followed(student_info.SID, course[0]) %}
+                                                <div class="withdraw-button" onclick="followCourse('{{ student_info.SID }}', '{{ course[0] }}', 0)">取消</div>
+                                            {% else %}
+                                                <div class="follow-button" onclick="followCourse('{{ student_info.SID }}', '{{ course[0] }}', 1)">關注</div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="add-button" onclick="addCourse('{{ student_info.SID }}', '{{ course[0] }}')">加選</div>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
@@ -622,6 +679,51 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+    <!-- Follow List -->
+    <div id="followSection" style="position: fixed; top: 17%; left: 33%; display: block;">
+        <h2>Followed</h2>
+        <div style="padding-right: 20px; height: 497px; overflow-y: auto;">
+            {% if follow_list %}
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 64px;">選課代碼</th>
+                        <th style="width: 64px;">課程編碼</th>
+                        <th style="width: 85px;">課堂名稱</th>
+                        <th>教授</th>
+                        <th>必選修</th>
+                        <th style="width: 64px;">系別</th>
+                        <th>學分</th>
+                        <th>人數</th>
+                        <th style="width: 64px;">時間</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in follow_list %}
+                        {% set course = course_data(row[0]) %}
+                        <tr>
+                            <td>{{ course.ID }}</td>
+                            <td>{{ course.course_id }}</td>
+                            <td style="padding: 3px;">{{ course.cname }}</td>
+                            <td>{{ professor_data(course.professor).name }}</td>
+                            <td>{{ course.type }}</td>
+                            <td>{{ course.major }}</td>
+                            <td>{{ course.credit }}</td>
+                            <td>{{ course.current_member }} / {{ course.max_member }}</td>
+                            <td>({{ course.start//14+1 }}) {{ course.start%14 }}-{{ course.end%14 }}</td>
+                            <td style="padding: 4px;">
+                                <div class="withdraw-button" onclick="followCourse('{{ student_info.SID }}', '{{ course.ID }}', 0)">取消</div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No result</p>
+            {% endif %}
         </div>
     </div>
 </body>

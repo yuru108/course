@@ -25,7 +25,7 @@ def add_course(SID, CID):
         return False, error
 
     #判斷是否為本系
-    elif student.major != course.major and course.major != None:
+    elif student.major != course.major and course.major != '通識學院':
         error = '不可選修他系課程'
         return False, error
 
