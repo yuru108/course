@@ -230,6 +230,53 @@
                 background-color: #4f3eb1;
             }
         }
+        .help-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #6350ca;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+            &:hover {
+                background-color: #4f3eb1;
+            }
+        }
+        .help-content {
+            background-color: #f9f9f9;
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 30px;
+            width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+
+            &.active {
+                display: block;
+            }
+        }
+        .content-text {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
     </style>
     <script>
         function toggleInput(element) {
@@ -413,9 +460,13 @@
                 handleOptionClick("follow");
             });
         });
+        function toggleHelp() {
+            var helpContent = document.getElementById("helpContent");
+            helpContent.classList.toggle("active");
+        }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
     <!-- Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
     <script>
         const successAlert = (title) => {
             Swal.fire({
@@ -724,6 +775,21 @@
             {% else %}
             <p>No result</p>
             {% endif %}
+        </div>
+    </div>
+    <!-- Direction -->
+    <div>
+        <button class="help-button" onclick="toggleHelp()">?</button>
+        <div class="help-content" id="helpContent">
+            <span class="close-button" onclick="toggleHelp()">&times;</span>
+            <h4 class="content-text">使用說明</h4>
+            <h5 class="content-text">case1</h5>
+            <p class="content-text">test</p>
+            <p class="content-text">test</p>
+            <h5 class="content-text">case2</h5>
+            <p class="content-text">test</p>
+            <p class="content-text">test</p>
+            <p class="content-text">test</p>
         </div>
     </div>
 </body>
