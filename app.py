@@ -26,19 +26,16 @@ def root():
 
 @app.route('/index')
 def index():
+    global login_flag
     if login_flag == False:
         return redirect(url_for('login_page'))
 
-    try:
-        schedule_name = 'schedule_'+student_info.SID
-        schedule_data = select_table(schedule_name)
+    schedule_name = 'schedule_'+student_info.SID
+    schedule_data = select_table(schedule_name)
 
-        follow = follow_list(student_info.SID)
+    follow = follow_list(student_info.SID)
 
-        return render_template('index.html', schedule=schedule_data, student_info=student_info, follow_list=follow, course_data=course_data, professor_data=professor_data, selectable=selectable)
-    except:
-        login_flag = False
-        return redirect(url_for('login_page'))
+    return render_template('index.html', schedule=schedule_data, student_info=student_info, follow_list=follow, course_data=course_data, professor_data=professor_data, selectable=selectable)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -87,28 +84,23 @@ def logout():
 
 @app.route('/search', methods=['GET'])
 def search():
-    try:
-        global student_info
-        search_options = {}
-        for key, value in request.args.items():
-            if key.endswith('_input'):
-                option_name = key.split('_input')[0]
-                search_options[option_name] = value
+    global student_info
+    search_options = {}
+    for key, value in request.args.items():
+        if key.endswith('_input'):
+            option_name = key.split('_input')[0]
+            search_options[option_name] = value
 
-        search_result = search_courses(search_options, student_info)
+    search_result = search_courses(search_options, student_info)
 
-        student_info = student_data(student_info.SID)
+    student_info = student_data(student_info.SID)
 
-        schedule_name = 'schedule_'+student_info.SID
-        schedule_data = select_table(schedule_name)
+    schedule_name = 'schedule_'+student_info.SID
+    schedule_data = select_table(schedule_name)
 
-        follow = follow_list(student_info.SID)
+    follow = follow_list(student_info.SID)
 
-        return render_template('index.html', search_result=search_result, student_info=student_info, schedule=schedule_data, follow_list=follow, course_data=course_data, professor_data=professor_data, in_schedule=in_schedule, is_followed=is_followed, selectable=selectable)
-    except:
-        global login_flag
-        login_flag = False
-        return redirect(url_for('login_page'))
+    return render_template('index.html', search_result=search_result, student_info=student_info, schedule=schedule_data, follow_list=follow, course_data=course_data, professor_data=professor_data, in_schedule=in_schedule, is_followed=is_followed, selectable=selectable)
 
 @app.route('/add_course', methods=['POST'])
 def add_course_route():
